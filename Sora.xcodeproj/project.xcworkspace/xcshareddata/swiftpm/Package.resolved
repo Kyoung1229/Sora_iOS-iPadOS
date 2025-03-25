@@ -1,0 +1,24 @@
+{
+  "originHash" : "f4700d81f827be0020081067cb03e24451c37dbbfc3bad4bfa8e13fb63fd5473",
+  "pins" : [
+    {
+      "identity" : "down",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnxnguyen/Down.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "e754ab1c80920dd51a8e08290c912ac1c2ac8b58"
+      }
+    },
+    {
+      "identity" : "swift-markdownkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/objecthub/swift-markdownkit.git",
+      "state" : {
+        "revision" : "d9bc97f7ad32cfdda621eaaa0eb88082eb75fbd8",
+        "version" : "1.1.9"
+      }
+    }
+  ],
+  "version" : 3
+}

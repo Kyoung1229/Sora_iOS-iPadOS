@@ -1,0 +1,644 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D80F0F202D7D972900E7D380 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = D80F0F1F2D7D972900E7D380 /* Down */; };
+		D80F0F232D7D9C0C00E7D380 /* MarkdownKit in Frameworks */ = {isa = PBXBuildFile; productRef = D80F0F222D7D9C0C00E7D380 /* MarkdownKit */; };
+		D80F0F252D7D9C2B00E7D380 /* MarkdownKitProcess in Frameworks */ = {isa = PBXBuildFile; productRef = D80F0F242D7D9C2B00E7D380 /* MarkdownKitProcess */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D8BC85AB2D425C1700044F6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D8BC858E2D425C1600044F6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D8BC85952D425C1600044F6E;
+			remoteInfo = Luna;
+		};
+		D8BC85B52D425C1700044F6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D8BC858E2D425C1600044F6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D8BC85952D425C1600044F6E;
+			remoteInfo = Luna;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D8BC85962D425C1600044F6E /* Sora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sora.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8BC85AA2D425C1700044F6E /* SoraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8BC85B42D425C1700044F6E /* SoraUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoraUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D80F0E862D6F275400E7D380 /* Exceptions for "Sora" folder in "Sora" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D8BC85952D425C1600044F6E /* Sora */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D8BC85982D425C1600044F6E /* Sora */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D80F0E862D6F275400E7D380 /* Exceptions for "Sora" folder in "Sora" target */,
+			);
+			path = Sora;
+			sourceTree = "<group>";
+		};
+		D8BC85AD2D425C1700044F6E /* SoraTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoraTests;
+			sourceTree = "<group>";
+		};
+		D8BC85B72D425C1700044F6E /* SoraUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SoraUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D8BC85932D425C1600044F6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D80F0F232D7D9C0C00E7D380 /* MarkdownKit in Frameworks */,
+				D80F0F202D7D972900E7D380 /* Down in Frameworks */,
+				D80F0F252D7D9C2B00E7D380 /* MarkdownKitProcess in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BC85A72D425C1700044F6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BC85B12D425C1700044F6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D8BC858D2D425C1600044F6E = {
+			isa = PBXGroup;
+			children = (
+				D8BC85982D425C1600044F6E /* Sora */,
+				D8BC85AD2D425C1700044F6E /* SoraTests */,
+				D8BC85B72D425C1700044F6E /* SoraUITests */,
+				D8BC85972D425C1600044F6E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D8BC85972D425C1600044F6E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D8BC85962D425C1600044F6E /* Sora.app */,
+				D8BC85AA2D425C1700044F6E /* SoraTests.xctest */,
+				D8BC85B42D425C1700044F6E /* SoraUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D8BC85952D425C1600044F6E /* Sora */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8BC85BD2D425C1700044F6E /* Build configuration list for PBXNativeTarget "Sora" */;
+			buildPhases = (
+				D8BC85922D425C1600044F6E /* Sources */,
+				D8BC85932D425C1600044F6E /* Frameworks */,
+				D8BC85942D425C1600044F6E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D8BC85982D425C1600044F6E /* Sora */,
+			);
+			name = Sora;
+			packageProductDependencies = (
+				D80F0F1F2D7D972900E7D380 /* Down */,
+				D80F0F222D7D9C0C00E7D380 /* MarkdownKit */,
+				D80F0F242D7D9C2B00E7D380 /* MarkdownKitProcess */,
+			);
+			productName = Luna;
+			productReference = D8BC85962D425C1600044F6E /* Sora.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D8BC85A92D425C1700044F6E /* SoraTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8BC85C22D425C1700044F6E /* Build configuration list for PBXNativeTarget "SoraTests" */;
+			buildPhases = (
+				D8BC85A62D425C1700044F6E /* Sources */,
+				D8BC85A72D425C1700044F6E /* Frameworks */,
+				D8BC85A82D425C1700044F6E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D8BC85AC2D425C1700044F6E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D8BC85AD2D425C1700044F6E /* SoraTests */,
+			);
+			name = SoraTests;
+			packageProductDependencies = (
+			);
+			productName = LunaTests;
+			productReference = D8BC85AA2D425C1700044F6E /* SoraTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D8BC85B32D425C1700044F6E /* SoraUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8BC85C52D425C1700044F6E /* Build configuration list for PBXNativeTarget "SoraUITests" */;
+			buildPhases = (
+				D8BC85B02D425C1700044F6E /* Sources */,
+				D8BC85B12D425C1700044F6E /* Frameworks */,
+				D8BC85B22D425C1700044F6E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D8BC85B62D425C1700044F6E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D8BC85B72D425C1700044F6E /* SoraUITests */,
+			);
+			name = SoraUITests;
+			packageProductDependencies = (
+			);
+			productName = LunaUITests;
+			productReference = D8BC85B42D425C1700044F6E /* SoraUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D8BC858E2D425C1600044F6E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					D8BC85952D425C1600044F6E = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					D8BC85A92D425C1700044F6E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D8BC85952D425C1600044F6E;
+					};
+					D8BC85B32D425C1700044F6E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D8BC85952D425C1600044F6E;
+					};
+				};
+			};
+			buildConfigurationList = D8BC85912D425C1600044F6E /* Build configuration list for PBXProject "Sora" */;
+			developmentRegion = ko;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				ko,
+			);
+			mainGroup = D8BC858D2D425C1600044F6E;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D80F0F1E2D7D972900E7D380 /* XCRemoteSwiftPackageReference "Down" */,
+				D80F0F212D7D9C0C00E7D380 /* XCRemoteSwiftPackageReference "swift-markdownkit" */,
+				D80F0F6F2D88353300E7D380 /* XCLocalSwiftPackageReference "../../generative-ai-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D8BC85972D425C1600044F6E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D8BC85952D425C1600044F6E /* Sora */,
+				D8BC85A92D425C1700044F6E /* SoraTests */,
+				D8BC85B32D425C1700044F6E /* SoraUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D8BC85942D425C1600044F6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BC85A82D425C1700044F6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BC85B22D425C1700044F6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D8BC85922D425C1600044F6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BC85A62D425C1700044F6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D8BC85B02D425C1700044F6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D8BC85AC2D425C1700044F6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D8BC85952D425C1600044F6E /* Sora */;
+			targetProxy = D8BC85AB2D425C1700044F6E /* PBXContainerItemProxy */;
+		};
+		D8BC85B62D425C1700044F6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D8BC85952D425C1600044F6E /* Sora */;
+			targetProxy = D8BC85B52D425C1700044F6E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D8BC85BE2D425C1700044F6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sora/Sora.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sora/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sora/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoung.sora;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D8BC85BF2D425C1700044F6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sora/Sora.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Sora/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sora/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoung.sora;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D8BC85C02D425C1700044F6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D8BC85C12D425C1700044F6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D8BC85C32D425C1700044F6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoung.SoraTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sora.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Sora";
+			};
+			name = Debug;
+		};
+		D8BC85C42D425C1700044F6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoung.SoraTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sora.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Sora";
+			};
+			name = Release;
+		};
+		D8BC85C62D425C1700044F6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoung.SoraUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Sora;
+			};
+			name = Debug;
+		};
+		D8BC85C72D425C1700044F6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyoung.SoraUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Sora;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D8BC85912D425C1600044F6E /* Build configuration list for PBXProject "Sora" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8BC85C02D425C1700044F6E /* Debug */,
+				D8BC85C12D425C1700044F6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D8BC85BD2D425C1700044F6E /* Build configuration list for PBXNativeTarget "Sora" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8BC85BE2D425C1700044F6E /* Debug */,
+				D8BC85BF2D425C1700044F6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D8BC85C22D425C1700044F6E /* Build configuration list for PBXNativeTarget "SoraTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8BC85C32D425C1700044F6E /* Debug */,
+				D8BC85C42D425C1700044F6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D8BC85C52D425C1700044F6E /* Build configuration list for PBXNativeTarget "SoraUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8BC85C62D425C1700044F6E /* Debug */,
+				D8BC85C72D425C1700044F6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		D80F0F6F2D88353300E7D380 /* XCLocalSwiftPackageReference "../../generative-ai-swift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../generative-ai-swift";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D80F0F1E2D7D972900E7D380 /* XCRemoteSwiftPackageReference "Down" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnxnguyen/Down.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		D80F0F212D7D9C0C00E7D380 /* XCRemoteSwiftPackageReference "swift-markdownkit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/objecthub/swift-markdownkit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D80F0F1F2D7D972900E7D380 /* Down */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D80F0F1E2D7D972900E7D380 /* XCRemoteSwiftPackageReference "Down" */;
+			productName = Down;
+		};
+		D80F0F222D7D9C0C00E7D380 /* MarkdownKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D80F0F212D7D9C0C00E7D380 /* XCRemoteSwiftPackageReference "swift-markdownkit" */;
+			productName = MarkdownKit;
+		};
+		D80F0F242D7D9C2B00E7D380 /* MarkdownKitProcess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D80F0F212D7D9C0C00E7D380 /* XCRemoteSwiftPackageReference "swift-markdownkit" */;
+			productName = MarkdownKitProcess;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D8BC858E2D425C1600044F6E /* Project object */;
+}
