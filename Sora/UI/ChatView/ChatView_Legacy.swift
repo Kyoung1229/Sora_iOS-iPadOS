@@ -1,11 +1,7 @@
 import SwiftUI
 import SwiftData
-var messages: [[String: Any]] = []
-var model: String = ""
-var apiKey: String = ""
-var streamingText: String = ""
-var oldMessage: String = ""
 
+// 기존 ChatView를 ChatView_Legacy로 이름 변경
 struct ChatView_Legacy: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var conversations: [SoraConversationsDatabase]
@@ -59,7 +55,7 @@ struct ChatView_Legacy: View {
                             if !lastMessage.isEmpty {
                                 if isStreamingCompleted {
                                     ChatBubble_Model(message: lastMessage)
-                                        .id(UUID())
+                                        .id("current-message")
                                         .transition(.opacity)
                                 } else {
                                     ChatBubble_Model_Animate(
@@ -67,7 +63,7 @@ struct ChatView_Legacy: View {
                                         updatedChunk: lastChunk,
                                         animationDuration: 0.3
                                     )
-                                    .id(UUID())
+                                    .id("current-message-animate")
                                     .transition(.opacity)
                                 }
                             }
@@ -182,7 +178,7 @@ struct ChatView_Legacy: View {
             apiKey: apiKey,
             messages: messages,
             onChunk: { chunk in
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     // extractAnswer를 사용하여 청크에서 텍스트 추출 (실패 시 기본적으로 chunk 사용)
                     let extracted = messagesManager.extractAnswer(from: chunk) ?? ""
                     if extracted.isEmpty { return } // 빈 응답은 무시
@@ -205,7 +201,6 @@ struct ChatView_Legacy: View {
                             lastChunk = extracted
                         }
                     }
-                    print(lastMessage)
                     
                     // UI 업데이트
                     if !isFirstMessageSent {
@@ -215,7 +210,7 @@ struct ChatView_Legacy: View {
                 }
             },
             onComplete: { reason in
-                DispatchQueue.main.sync {
+                DispatchQueue.main.async {
                     // 스트리밍 완료 시 애니메이션과 함께 상태 변경
                     withAnimation(.easeInOut(duration: 0.5)) {
                         finishReason = reason
@@ -224,17 +219,32 @@ struct ChatView_Legacy: View {
                     
                     // 콘솔에 완료 상태 출력
                     print("🏁 스트리밍 완료! finishReason: \(reason ?? "없음")")
-                    print(messages)
                     
                     // 데이터베이스에 대화 저장
                     conversation?.messages = messagesManager.encodeMessages(messages)
+                    
+                    // 대화 제목이 비어있는 경우 첫 번째 메시지를 기반으로 제목 설정
+                    if conversation?.title == "새로운 대화" && !userInput.isEmpty {
+                        // 첫 20자 또는 줄바꿈 전까지의 내용을 제목으로 사용
+                        let newTitle = String(userInput.prefix(while: { $0 != "\n" }).prefix(20))
+                        if !newTitle.isEmpty {
+                            conversation?.title = newTitle + (newTitle.count >= 20 ? "..." : "")
+                        }
+                    }
                 }
             }
         )
     }
 }
 
-struct ChatView_Previews: PreviewProvider {
+// 전역 변수 (클래스 외부에 정의)
+var messages: [[String: Any]] = []
+var model: String = ""
+var apiKey: String = ""
+var streamingText: String = ""
+var oldMessage: String = ""
+
+struct ChatView_Legacy_Previews: PreviewProvider {
     static var previews: some View {
         ChatView_Legacy(CVUUID: UUID())
     }

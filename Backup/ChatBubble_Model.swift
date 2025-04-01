@@ -42,34 +42,31 @@ struct MarkdownView: View {
 struct ChatBubble_Model: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @State var message: String
+    
     var body: some View {
-        VStack(spacing: -10) {
-            VStack {
-                var fontC: Color {
-                    colorScheme == .light ? Color.black : Color.white
-                }
-                
-                var fontHex: String {
-                    colorScheme == .light ? "#0F0D0A" : "#FFFEF3"
-                }
-                let document = MarkdownParser.standard.parse(message)
-                let generator = AttributedStringGenerator(
-                    fontSize: 16,
-                    fontFamily: "Helvetica",
-                    fontColor: fontHex
-                )
-                let attributedString = generator.generate(doc: document)
-                withAnimation {
-                    Text(AttributedString(attributedString!))
-                }
-                
+        VStack(spacing: 0) {
+            let fontHex = colorScheme == .light ? "#0F0D0A" : "#FFFEF3"
+            let document = MarkdownParser.standard.parse(message)
+            let generator = AttributedStringGenerator(
+                fontSize: 16,
+                fontFamily: "Helvetica",
+                fontColor: fontHex
+            )
+            
+            if let attributedString = generator.generate(doc: document) {
+                Text(AttributedString(attributedString))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 2)
+            } else {
+                Text(message)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 2)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        
     }
 }
+
 struct ChatBubble_Model_Animate: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     // The unchanged base part of the message
@@ -81,7 +78,7 @@ struct ChatBubble_Model_Animate: View {
     var animationDuration: Double
     
     // Initializer with default values
-    init(baseMessage: String, updatedChunk: String, animationDuration: Double = 0.8) {
+    init(baseMessage: String, updatedChunk: String, animationDuration: Double = 0.5) {
         self.baseMessage = baseMessage
         self.updatedChunk = updatedChunk
         self.animationDuration = animationDuration
@@ -89,6 +86,7 @@ struct ChatBubble_Model_Animate: View {
     
     // State for animation
     @State private var opacity: Double = 0
+    @State private var isAnimationCompleted: Bool = false
     
     var body: some View {
         let fontHex = colorScheme == .light ? "#0F0D0A" : "#FFFEF3"
@@ -106,25 +104,44 @@ struct ChatBubble_Model_Animate: View {
         let chunkDocument = MarkdownParser.standard.parse(updatedChunk)
         let chunkAttributed = generator.generate(doc: chunkDocument) ?? NSAttributedString(string: updatedChunk)
         
-        return VStack(spacing: -10) {
+        return VStack(spacing: 0) {
             HStack(alignment: .top, spacing: 0) {
                 // Base message (unchanged)
-                Text(AttributedString(baseAttributed))
+                if !baseMessage.isEmpty {
+                    Text(AttributedString(baseAttributed))
+                }
                 
-                // Animated part
-                Text(AttributedString(chunkAttributed))
-                    .opacity(opacity)
+                // Animated part - optimized with conditional logic
+                if !updatedChunk.isEmpty {
+                    if isAnimationCompleted {
+                        // 애니메이션 완료 후 정적 텍스트로 표시 (성능 향상)
+                        Text(AttributedString(chunkAttributed))
+                    } else {
+                        // 애니메이션 중 텍스트
+                        Text(AttributedString(chunkAttributed))
+                            .opacity(opacity)
+                            .onChange(of: opacity) { _, newValue in
+                                if newValue >= 0.99 {
+                                    isAnimationCompleted = true
+                                }
+                            }
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .onAppear {
+                // 나타날 때 애니메이션 시작
                 withAnimation(.easeIn(duration: animationDuration)) {
                     opacity = 1.0
                 }
             }
         }
+        .padding(.vertical, 2)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .id("\(baseMessage.hashValue)-\(updatedChunk.hashValue)") // 고유 ID로 리렌더링 문제 방지
     }
 }
+
 struct ChatBubble_Model_Legacy: View {
     @State var message: String
     var body: some View {

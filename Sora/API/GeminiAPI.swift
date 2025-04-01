@@ -35,6 +35,79 @@ struct GeminiAPI {
         let task = session.dataTask(with: request)
         task.resume()
     }
+    
+    /// 이미지를 포함한 메시지로 스트리밍 API 호출
+    func callWithStreamingAndImage(model: String,
+                                  apiKey: String,
+                                  textMessage: String,
+                                  imageBase64: String,
+                                  mimeType: String = "image/jpeg",
+                                  previousMessages: [[String: Any]] = [],
+                                  onChunk: @escaping @Sendable ([String: Any]) -> Void,
+                                  onComplete: @escaping @Sendable (String?) -> Void = { _ in }) {
+        // Gemini Pro Vision 모델 사용
+        let visionModel = model.contains("vision") ? model : "gemini-pro-vision"
+        
+        guard let endpoint = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(visionModel):streamGenerateContent?alt=sse&key=\(apiKey)") else {
+            return
+        }
+        
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // 이미지를 포함한 새 사용자 메시지 생성
+        let newUserMessage: [String: Any] = [
+            "role": "user",
+            "parts": [
+                [
+                    "text": textMessage
+                ],
+                [
+                    "inline_data": [
+                        "mime_type": mimeType,
+                        "data": imageBase64
+                    ]
+                ]
+            ]
+        ]
+        
+        // 이전 메시지에 새 메시지 추가
+        var allMessages = previousMessages
+        allMessages.append(newUserMessage)
+        
+        let requestBody: [String: Any] = [
+            "contents": allMessages,
+            "system_instruction": [
+                "parts": [
+                    "text": SystemPrompt().get()
+                ]
+            ]
+        ]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+        } catch {
+            onComplete("JSON 직렬화 오류: \(error.localizedDescription)")
+            return
+        }
+        
+        let delegate = StreamingDataHandler(onChunk: onChunk, onComplete: onComplete)
+        let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+        let task = session.dataTask(with: request)
+        task.resume()
+    }
+    
+    /// 로컬 이미지 파일을 Base64로 인코딩
+    func encodeImageToBase64(imageURL: URL) -> String? {
+        do {
+            let imageData = try Data(contentsOf: imageURL)
+            return imageData.base64EncodedString()
+        } catch {
+            print("이미지 인코딩 오류: \(error.localizedDescription)")
+            return nil
+        }
+    }
 }
 
 /// 스트리밍 응답 Data를 처리하여 JSON Dictionary로 파싱 후 onChunk 클로저에 전달하는 delegate 클래스
@@ -94,7 +167,6 @@ final class StreamingDataHandler: NSObject, URLSessionDataDelegate, @unchecked S
            let firstCandidate = candidates.first,
            let finishReason = firstCandidate["finishReason"] as? String {
             self.finishReason = finishReason
-
         }
     }
     
@@ -103,7 +175,8 @@ final class StreamingDataHandler: NSObject, URLSessionDataDelegate, @unchecked S
             print("스트리밍 호출 에러: \(error.localizedDescription)")
             onComplete(nil)
         } else {
-
+            print("스트리밍 완료. finishReason: \(finishReason ?? "없음")")
+            onComplete(finishReason)
         }
     }
 }
