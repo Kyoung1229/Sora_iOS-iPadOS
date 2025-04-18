@@ -72,7 +72,11 @@ struct ChatSideMenuView: View {
     // 상태 변수
     @State private var chatTitle: String
     @State private var tempTitle: String  // 임시 제목 상태 추가
+    @State private var selectedModel = ""
     @FocusState private var isTitleFocused: Bool
+    
+    // 설정 화면 상태
+    @State private var showAPISettings = false
     
     // 애니메이션 상태 추가
     @State private var slideOffset: CGFloat = 300
@@ -89,7 +93,13 @@ struct ChatSideMenuView: View {
     
     // 모델 선택 옵션
     private let modelOptions = [
+        "gpt-4o-mini",
+        "gpt-4o",
+        "gpt-4.1-nano",
+        "gpt-4.1-mini",
+        "gpt-4.1",
         "gemini-2.0-flash",
+        "gemini-2.5-pro-exp-03-25",
         "gemini-1.5-pro"
     ]
     
@@ -106,7 +116,8 @@ struct ChatSideMenuView: View {
         // 배경 및 메인 컨테이너
         ZStack(alignment: .trailing) {
             // 배경
-            GlassRectangle(gyro: gyro, cornerRadius: 50, width: UIScreen.main.bounds.width * 0.75, height: UIScreen.main.bounds.height * 0.8)
+            GlassRectangle(gyro: gyro, cornerRadius: 0, width: UIScreen.main.bounds.width * 0.75, height: UIScreen.main.bounds.height)
+                .ignoresSafeArea()
             
             // 메인 컨테이너
             VStack(spacing: 20) {
@@ -128,6 +139,38 @@ struct ChatSideMenuView: View {
                             deleteButton
                             // 하단 여백
                             Spacer(minLength: 40)
+                            
+                            // 다양한 설정 옵션들
+                            
+                            // 구분선
+                            Divider()
+                                .padding(.horizontal, 10)
+                            
+                            // API 설정 화면으로 이동 버튼
+                            Button(action: {
+                                showAPISettings = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "key.fill")
+                                        .foregroundColor(.blue)
+                                    
+                                    Text("API 설정")
+                                        .foregroundColor(.primary)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color("ChatBubbleBackgroundColor_User"))
+                                )
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
                         }
                         .padding(.horizontal)
                     }
@@ -164,6 +207,7 @@ struct ChatSideMenuView: View {
                         }
                     }
                     .onAppear {
+                        selectedModel = conversation.model
                         scrollViewProxy = proxy
                     }
                 }
@@ -171,7 +215,7 @@ struct ChatSideMenuView: View {
                 // 푸터 영역
                 
             }
-            .frame(width: UIScreen.main.bounds.width * 0.75, height: UIScreen.main.bounds.height * 0.8)
+            .frame(width: UIScreen.main.bounds.width * 0.75, height: UIScreen.main.bounds.height * 0.95)
         }
         // 슬라이드 애니메이션 적용
         .offset(x: slideOffset)
@@ -186,18 +230,36 @@ struct ChatSideMenuView: View {
             // 사라질 때는 애니메이션 초기화 (다음에 나타날 때 다시 슬라이드 인 되도록)
             slideOffset = 300
         }
+        .onChange(of: titleFieldID) { newValue in
+            // titleFieldID가 변경되었을 때, isTitleFocused를 다시 설정
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isTitleFocused = true
+            }
+        }
+        .sheet(isPresented: $showAPISettings) {
+            APISettingsView()
+        }
     }
     
     // MARK: - 헤더 뷰
     private var headerView: some View {
-        HStack {
-            Text("대화 메뉴")
-                .font(.title2.bold())
-                .padding(.leading, 10)
+    HStack {
+        Text("대화 메뉴")
+            .font(.title2.bold())
+            .padding(.leading, 10)
                 
-            Spacer()
+        Spacer()
+        Button {
+            // 설정 버튼 동작을 여기에 구현하세요
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "gearshape")
+            }
+            .font(.title3)
         }
-        .padding()
+        .padding(.trailing, 10)
+    }
+    .padding()
     }
     
     // MARK: - 대화 제목 섹션
@@ -212,9 +274,11 @@ struct ChatSideMenuView: View {
                 .focused($isTitleFocused)  // 명시적 포커스 상태 관리
                 .font(.body)
                 .padding(12)
-                .background(Color("UniversalUpperElement"))
+                .background(
+                    GlassRectangle(gyro: gyro, cornerRadius: 15, width: UIScreen.main.bounds.width * 0.7, height: 44)
+                )
                 .cornerRadius(15)
-                .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
+
                 .onSubmit {
                     saveTitleAndDismissKeyboard()
                 }
@@ -225,11 +289,6 @@ struct ChatSideMenuView: View {
                 }
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color("UniversalBackground") : .white)
-        )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.8 : 0.2), radius: 7, y: 8)
     }
     
     // MARK: - 모델 설정 섹션
@@ -239,41 +298,13 @@ struct ChatSideMenuView: View {
                 .font(.headline)
                 .foregroundColor(.secondary)
             
-            VStack(spacing: 10) {
-                ForEach(modelOptions, id: \.self) { model in
-                    Button {
-                        conversation.model = model
-                    } label: {
-                        HStack {
-                            Text(model)
-                                .font(.body)
-                            
-                            Spacer()
-                            
-                            if model == conversation.model {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color("UniversalUpperElement"))
-                                .opacity(model == conversation.model ? 1 : 1)
-                                .shadow(color: .black.opacity(0.2), radius: 2, y: 2)
-                        )
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                    .contentShape(Rectangle())
-                }
-            }
+            GlassDropdown(gyro: gyro, selectedOption: $selectedModel, options: modelOptions, width: UIScreen.main.bounds.width * 0.7, height: 44, cornerRadius: 15)
+        }
+        .onChange(of: selectedModel) {
+            print(selectedModel)
+            conversation.model = selectedModel
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color("UniversalBackground") : .white)
-        )
-        .shadow(color: .black.opacity(colorScheme == .dark ? 0.8 : 0.2), radius: 7, y: 8)
     }
     
     // MARK: - 삭제 버튼
@@ -339,4 +370,4 @@ struct ChatSideMenuView: View {
     
     return ChatSideMenuView(conversation: sampleConversation, apiKey: "AIza...", onClose: {})
         .modelContainer(container)
-} 
+}

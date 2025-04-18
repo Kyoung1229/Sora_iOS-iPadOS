@@ -106,7 +106,7 @@ struct GlassRectangle: View {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .foregroundStyle(.ultraThinMaterial.opacity(0.985))
                 .frame(width: width, height: height)
-                .shadow(color: .black.opacity(0.3), radius: edgeBlend * 8, x: 2 * edgeLightingConstant_x, y:  2 * edgeLightingConstant_y)
+                .shadow(color: .black.opacity(0.3), radius: edgeBlend * 2, x: 2 * edgeLightingConstant_x, y:  2 * edgeLightingConstant_y)
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(.black.opacity(0.1).gradient.shadow(.inner(color: .white.opacity(edgeLight), radius: edgeBlend, x: -edgeLightingConstant_x, y: -edgeLightingConstant_y)))
                 .frame(width: width, height: height)
@@ -142,7 +142,7 @@ struct GlassRectangle: View {
                 }
             case .automatic:
                 withAnimation {
-                    edgeLight = (pow(1 / 4, length_constant / 100) + 2) * 2.5 * lightingIntensity_edge
+                    edgeLight = colorScheme == .dark ? 1 : 6 * ((pow(1 / 4, length_constant / 100) + 2) * 2.5 * lightingIntensity_edge)
                     edgeBlend = (pow(length_constant, 0.5) + 2) / 24 * lightingIntensity_edge
                     surfaceLightingConstant = (pow(length_constant, 0.5) + 2) / 90 * lightingIntensity_surface
                     surfaceLightingRadius = length_constant * 0.6

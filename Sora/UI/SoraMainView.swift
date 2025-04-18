@@ -10,6 +10,12 @@ struct SoraMainView: View {
     let headerHeight: CGFloat = 60
     let navigatorWidth: CGFloat = UIScreen.main.bounds.width * 0.6
     
+    // 환경 변수
+    @Environment(\.modelContext) private var modelContext
+    
+    // 설정 화면 상태
+    @State private var showAPISettings = false
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -64,6 +70,14 @@ struct SoraMainView: View {
                             
                             Spacer()
                             
+                            Button(action: {
+                                showAPISettings = true
+                            }) {
+                                Image(systemName: "gearshape")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.primary)
+                            }
+                            
                             // 오른쪽 여백 (균형을 위해)
                             Color.clear
                                 .frame(width: 44, height: 44)
@@ -103,7 +117,12 @@ struct SoraMainView: View {
                 .ignoresSafeArea(edges: .top)
                 .zIndex(2)  // zIndex를 2로 변경 (헤더보다 높게)
             }
-            .navigationBarHidden(true)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .ignoresSafeArea(.keyboard)
+            .sheet(isPresented: $showAPISettings) {
+                APISettingsView()
+            }
         }
     }
 }

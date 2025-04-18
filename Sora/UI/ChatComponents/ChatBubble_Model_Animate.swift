@@ -21,7 +21,7 @@ struct ChatBubble_Model_Animate: View {
         VStack(alignment: .leading, spacing: 0) {
             // 텍스트 컨테이너 - 더 단순한 구조로 변경
             ZStack(alignment: .topLeading) {
-                if let attributed = try? AttributedString(markdown: fullMessage) {
+                if let attributed = try? AttributedString(markdown: fullMessage, options: AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
                     Text(attributed)
                         .font(.system(size: 15, weight: .regular))
                         .fixedSize(horizontal: false, vertical: true)
@@ -32,7 +32,7 @@ struct ChatBubble_Model_Animate: View {
                         // 애니메이션 제거하여 텍스트 렌더링 안정화
                         .animation(nil, value: fullMessage)
                         .animation(nil, value: baseMessage)
-                        .animation(nil, value: updatedChunk)
+                        .animation(.smooth(duration: 0.3), value: updatedChunk)
                         .allowsHitTesting(false) // 터치 이벤트 방지
                 }
                 // 더 안정적인 배경

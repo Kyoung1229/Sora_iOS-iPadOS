@@ -8,7 +8,7 @@ class SoraAPIKeys {
     private init() {} // 싱글톤 인스턴스
 
     /// Keychain에 API 키 저장
-    func save(api: APIType, key: String) {
+    func save(api: DataAPIType, key: String) {
         let data = Data(key.utf8)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -22,7 +22,7 @@ class SoraAPIKeys {
     }
 
     /// Keychain에서 API 키 불러오기
-    func load(api: APIType) -> String? {
+    func load(api: DataAPIType) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: api.rawValue,
@@ -39,17 +39,23 @@ class SoraAPIKeys {
     }
 
     /// Keychain에서 API 키 삭제
-    func delete(api: APIType) {
+    func delete(api: DataAPIType) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: api.rawValue
         ]
         SecItemDelete(query as CFDictionary)
     }
+    func getModelProvider(model: String) -> DataAPIType {
+        if model.contains("gpt") { return .openai }
+        else {
+            return .gemini
+        }
+    }
 }
 
 /// API 종류 정의
-enum APIType: String {
+enum DataAPIType: String {
     case gemini = "gemini_api_key"
     case openai = "openai_api_key"
 }

@@ -35,7 +35,7 @@ struct MainNavigator: View {
                     .padding(.bottom, 30)
                 
                 // 메뉴 항목들
-                NavigationLink(destination: ChatListView(), tag: "chats", selection: $selectedMenu) {
+                NavigationLink(destination: ChatView(model: "gpt-4.1", conversationId: UUID())) {
                     menuItem(
                         icon: "bubble.left.and.bubble.right.fill",
                         title: "채팅 목록",
