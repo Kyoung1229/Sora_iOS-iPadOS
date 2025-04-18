@@ -6,109 +6,80 @@ struct ChatBubble_Model_Animate: View {
     var animationDuration: Double
     @Environment(\.colorScheme) var colorScheme
     
+    // 애니메이션 상태 관리
     @State private var isAnimating: Bool = false
+    @State private var isCompleted: Bool = false
+    @State private var currentTextLength: Int = 0
     
-    // 애니메이션을 위한 변수들
-    private let characterDelay: Double = 0.01
-    private let typewriterMaxDelay: Double = 0.5
-    
-    // 두 텍스트를 결합하여 표시
+    // 두 텍스트를 결합하여 표시 (줄바꿈 처리 추가)
     private var fullMessage: String {
-        return baseMessage + updatedChunk
+        let combined = baseMessage + updatedChunk
+        return combined.replacingOccurrences(of: "\\n", with: "\n")
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // 이미 표시된 베이스 메시지와 업데이트된 텍스트 결합
-            HStack(alignment: .bottom, spacing: 0) {
-                // 메인 텍스트
-                Text(fullMessage)
-                    .font(.system(size: 15))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                
-                // 타이핑 커서 (깜박임 효과)
-                if !updatedChunk.isEmpty {
-                    Rectangle()
-                        .fill(Color.accentColor)
-                        .frame(width: 2, height: 15)
-                        .opacity(isAnimating ? 0.5 : 0)
-                        .animation(
-                            Animation.easeInOut(duration: 0.5)
-                                .repeatForever(autoreverses: true),
-                            value: isAnimating
-                        )
-                        .padding(.leading, 2)
+            // 텍스트 컨테이너 - 더 단순한 구조로 변경
+            ZStack(alignment: .topLeading) {
+                if let attributed = try? AttributedString(markdown: fullMessage) {
+                    Text(attributed)
+                        .font(.system(size: 15, weight: .regular))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(Color("ChatBubbleTextColor_Model"))
+                        .lineSpacing(4) // 줄 간격 추가
+                        .multilineTextAlignment(.leading) // 왼쪽 정렬 명시
+                        .padding(EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16))
+                        // 애니메이션 제거하여 텍스트 렌더링 안정화
+                        .animation(nil, value: fullMessage)
+                        .animation(nil, value: baseMessage)
+                        .animation(nil, value: updatedChunk)
+                        .allowsHitTesting(false) // 터치 이벤트 방지
                 }
+                // 더 안정적인 배경
+                
+                // 텍스트 내용
+                
             }
-            .padding(EdgeInsets(top: 14, leading: 18, bottom: 14, trailing: 18))
-            .background(
-                ZStack {
-                    // 메인 배경 - 블러 효과로 유리 질감
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(.ultraThinMaterial)
-                    
-                    // 미묘한 그라데이션 오버레이로 깊이감 추가
-                    RoundedRectangle(cornerRadius: 18)
-                        .fill(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    colorScheme == .dark ? 
-                                        Color.blue.opacity(0.05) : 
-                                        Color.blue.opacity(0.03),
-                                    colorScheme == .dark ? 
-                                        Color.purple.opacity(0.05) : 
-                                        Color.purple.opacity(0.03)
-                                ]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .opacity(0.7)
-                    
-                    // 타이핑 중 미묘한 펄스 효과 (아주 미세하게)
-                    if !updatedChunk.isEmpty {
-                        RoundedRectangle(cornerRadius: 18)
-                            .fill(Color.accentColor.opacity(0.02))
-                            .opacity(isAnimating ? 0.6 : 0.3)
+            
+            // 타이핑 인디케이터 (더 단순하게 구현)
+            if !isCompleted {
+                HStack(spacing: 3) {
+                    ForEach(0..<3) { i in
+                        Circle()
+                            .fill(Color.accentColor.opacity(0.6))
+                            .frame(width: 4, height: 4)
+                            .opacity(isAnimating ? 0.8 : 0.3)
                             .animation(
-                                Animation.easeInOut(duration: 1.0)
-                                    .repeatForever(autoreverses: true),
+                                Animation.easeInOut(duration: 0.3) // 애니메이션 기간 단축
+                                    .repeatForever(autoreverses: true)
+                                    .delay(Double(i) * 0.1),
                                 value: isAnimating
                             )
                     }
-                    
-                    // 테두리 강화
-                    RoundedRectangle(cornerRadius: 18)
-                        .stroke(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    colorScheme == .dark ? 
-                                        Color.white.opacity(0.08) : 
-                                        Color.black.opacity(0.06),
-                                    colorScheme == .dark ? 
-                                        Color.white.opacity(0.05) : 
-                                        Color.black.opacity(0.03)
-                                ]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 0.5
-                        )
                 }
-            )
-            .shadow(color: colorScheme == .dark ? 
-                    Color.black.opacity(0.15) : 
-                    Color.black.opacity(0.08), 
-                   radius: 3, x: 0, y: 1)
+                .padding(.leading, 16)
+                .padding(.top, 4)
+                .transition(.opacity)
+            }
         }
         .frame(maxWidth: UIScreen.main.bounds.width * 0.85, alignment: .leading)
         .onAppear {
-            // 애니메이션 활성화
-            withAnimation {
+            // 애니메이션 즉시 활성화
+            withAnimation(.easeIn(duration: 0.1)) {
                 isAnimating = true
             }
+            
+            // 애니메이션 완료 표시 - 지연시간 축소
+            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
+                isCompleted = true
+                withAnimation(.easeOut(duration: 0.2)) {
+                    isCompleted = true
+                }
+            }
         }
+        // 더 안정적인 ID 시스템 (길이 기반 + 해시 조합)
+        .id("bubble-\(baseMessage.count)-\(updatedChunk.count)-\(isCompleted ? "done" : "typing")")
+        .transition(.opacity) // 단순한 투명도 트랜지션
         .accessibilityLabel("모델 응답 중: \(fullMessage)")
     }
 }
@@ -119,8 +90,14 @@ struct ChatBubble_Model_Animate_Previews: PreviewProvider {
         VStack {
             ChatBubble_Model_Animate(
                 baseMessage: "안녕하세요, ",
-                updatedChunk: "무엇을 도와드릴까요?",
-                animationDuration: 0.5
+                updatedChunk: "무엇을 도와드릴까요?\n더 필요한 것이 있으신가요?",
+                animationDuration: 0.3
+            )
+            
+            ChatBubble_Model_Animate(
+                baseMessage: "줄바꿈 테스트:",
+                updatedChunk: "\\n1. 첫 번째 항목\\n2. 두 번째 항목",
+                animationDuration: 0.3
             )
         }
         .padding()

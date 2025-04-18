@@ -4,63 +4,33 @@ struct ChatBubble_User: View {
     var message: String
     @Environment(\.colorScheme) var colorScheme
     
+    // 줄바꿈 문자를 실제 줄바꿈으로 변환하는 계산 속성
+    private var formattedMessage: String {
+        return message.replacingOccurrences(of: "\\n", with: "\n")
+    }
+    
     var body: some View {
         VStack(alignment: .trailing, spacing: 0) {
             // 사용자 메시지 텍스트
-            Text(message)
-                .font(.system(size: 15))
+            Text(formattedMessage)
+                .font(.system(size: 15, weight: .medium))
                 .padding(EdgeInsets(top: 14, leading: 18, bottom: 14, trailing: 18))
                 .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(4) // 줄 간격 추가
+                .multilineTextAlignment(.leading) // 왼쪽 정렬 명시
                 // 다크 모드에서는 더 밝은 텍스트
-                .foregroundColor(.white)
+                .foregroundColor(Color("ChatBubbleTextColor_User"))
+                .shadow(color: Color("ChatBubbleShadowColor_Model"), radius: 0)
                 .background(
                     ZStack {
-                        // 주요 배경
-                        RoundedRectangle(cornerRadius: 18)
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Color.accentColor.opacity(0.9),
-                                        Color.accentColor
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .shadow(color: Color.accentColor.opacity(0.3), radius: 2, x: 0, y: 1)
-                        
-                        // 미묘한 질감 오버레이
-                        RoundedRectangle(cornerRadius: 18)
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Color.white.opacity(0.1),
-                                        Color.white.opacity(0.05)
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .opacity(0.6)
-                            .blendMode(.overlay)
-                        
-                        // 내부 하이라이트
-                        RoundedRectangle(cornerRadius: 18)
-                            .stroke(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Color.white.opacity(0.2),
-                                        Color.white.opacity(0.1)
-                                    ]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 0.5
-                            )
+                        // 주요 배경 (귀여운 버블 형태)
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color("ChatBubbleBackgroundColor_User"))
                     }
                 )
-                // 애니메이션 추가 (나타날 때)
-                .transition(.scale(scale: 0.95).combined(with: .opacity))
+                .shadow(color: Color("ChatBubbleShadowColor_User").opacity(1), radius: 7, x: 0, y: 2)
+                // 애니메이션 추가 (밑에서 위로 올라가는 효과)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
         }
         .frame(maxWidth: UIScreen.main.bounds.width * 0.85, alignment: .trailing)
         .accessibilityLabel("사용자: \(message)")
@@ -70,9 +40,12 @@ struct ChatBubble_User: View {
 // 미리보기
 struct ChatBubble_User_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            ChatBubble_User(message: "안녕하세요, 도움이 필요해요.")
+        ZStack {
+            VStack {
+                ChatBubble_User(message: "안녕하세요, 도움이 필요해요.")
+                ChatBubble_User(message: "줄바꿈 테스트:\\n1. 첫 번째 항목\\n2. 두 번째 항목")
+            }
+            .padding()
         }
-        .padding()
     }
 } 
