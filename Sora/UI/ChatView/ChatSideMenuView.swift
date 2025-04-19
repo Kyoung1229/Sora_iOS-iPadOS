@@ -215,8 +215,10 @@ struct ChatSideMenuView: View {
                 // 푸터 영역
                 
             }
+            .ignoresSafeArea(.keyboard)
             .frame(width: UIScreen.main.bounds.width * 0.75, height: UIScreen.main.bounds.height * 0.95)
         }
+        .ignoresSafeArea(.keyboard)
         // 슬라이드 애니메이션 적용
         .offset(x: slideOffset)
         // 키보드 높이에 따른 오프셋 수직 조정 추가 - 이제 전체 뷰가 함께 움직임
@@ -288,6 +290,7 @@ struct ChatSideMenuView: View {
                     isTitleFocused = true
                 }
         }
+        .ignoresSafeArea(.keyboard)
         .padding()
     }
     
@@ -301,7 +304,6 @@ struct ChatSideMenuView: View {
             GlassDropdown(gyro: gyro, selectedOption: $selectedModel, options: modelOptions, width: UIScreen.main.bounds.width * 0.7, height: 44, cornerRadius: 15)
         }
         .onChange(of: selectedModel) {
-            print(selectedModel)
             conversation.model = selectedModel
         }
         .padding()

@@ -4,28 +4,17 @@ import Foundation
 // import ModelProvider
 
 struct GeminiAPI {
-    private var customApiKey: String?
-    
-    // API 키 설정 메소드 추가
-    mutating func setApiKey(_ key: String) {
-        self.customApiKey = key
-    }
-    
-    // API 키 획득 헬퍼 함수
-    private func getApiKey() -> String {
-        // 커스텀 API 키가 설정되어 있으면 사용, 그렇지 않으면 전역 getAPI 함수 사용
-        return customApiKey ?? getAPI(for: ModelProvider.gemini)
-    }
     
     // 비‑스트리밍
     func generate(model: String,
+                  apiKey: String,
                   messages:[[String:Any]],
                   systemPrompt: String = "",
                   generationCfg: [String:Any] = [:],
                   completion: @escaping(Result<[String:Any],Error>)->Void)
     {
         let url = URL(string:
-                        "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(getApiKey())")!
+                        "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)")!
         var req = URLRequest(url:url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField:"Content-Type")
@@ -48,6 +37,7 @@ struct GeminiAPI {
     
     // 스트리밍
     func stream(model:String,
+                apiKey: String,
                 messageDicts:[[String:Any]],
                 tools:[[String:Any]] = [],
                 systemPrompt:String = "",
@@ -56,7 +46,7 @@ struct GeminiAPI {
                 onDone:@escaping(String?,Error?)->Void)
     {
         let url = URL(string:
-                        "https://generativelanguage.googleapis.com/v1beta/models/\(model):streamGenerateContent?alt=sse&key=\(getApiKey())")!
+                        "https://generativelanguage.googleapis.com/v1beta/models/\(model):streamGenerateContent?alt=sse&key=\(apiKey)")!
         var req = URLRequest(url:url)
         req.httpMethod="POST"
         req.setValue("application/json", forHTTPHeaderField:"Content-Type")
@@ -81,21 +71,9 @@ struct GeminiAPI {
 }
 
 struct OpenAIAPI {
-    private var customApiKey: String?
-    
-    // API 키 설정 메소드 추가
-    mutating func setApiKey(_ key: String) {
-        self.customApiKey = key
-    }
-    
-    // API 키 획득 헬퍼 함수
-    private func getApiKey() -> String {
-        // 커스텀 API 키가 설정되어 있으면 사용, 그렇지 않으면 전역 getAPI 함수 사용
-        return customApiKey ?? getAPI(for: ModelProvider.openai)
-    }
-    
     // 비‑스트리밍
     func generate(model:String,
+                  apiKey: String,
                   input:Any,
                   instructions:String = "",
                   completion:@escaping(Result<[String:Any],Error>)->Void)
@@ -104,7 +82,7 @@ struct OpenAIAPI {
         var req = URLRequest(url:url)
         req.httpMethod="POST"
         req.setValue("application/json",forHTTPHeaderField:"Content-Type")
-        req.setValue("Bearer \(getApiKey())",forHTTPHeaderField:"Authorization")
+        req.setValue("Bearer \(apiKey)",forHTTPHeaderField:"Authorization")
         
         var body:[String:Any] = ["model":model,"input":input]
         if !instructions.isEmpty { body["instructions"] = instructions }
@@ -121,6 +99,7 @@ struct OpenAIAPI {
     
     // 스트리밍
     func stream(model:String,
+                apiKey: String,
                 input:Any,
                 tools:[[String:Any]] = [],
                 instructions:String = "",
@@ -132,7 +111,7 @@ struct OpenAIAPI {
         var req = URLRequest(url:url)
         req.httpMethod="POST"
         req.setValue("application/json",forHTTPHeaderField:"Content-Type")
-        req.setValue("Bearer \(getApiKey())",forHTTPHeaderField:"Authorization")
+        req.setValue("Bearer \(apiKey)",forHTTPHeaderField:"Authorization")
         
         var body:[String:Any] = ["model":model,"input":input,"stream":true]
         if !tools.isEmpty     { body["tools"] = tools }

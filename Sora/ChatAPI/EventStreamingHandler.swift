@@ -22,17 +22,55 @@ final class EventStreamingHandler: NSObject, URLSessionDataDelegate {
                     dataTask: URLSessionDataTask,
                     didReceive data: Data)
     {
-        guard let raw = String(data: data, encoding: .utf8) else { return }
-        print(raw)
-        raw.split(separator: "\n").forEach { line in
-            guard line.hasPrefix("data:") else { return }
-            let jsonStr = line.dropFirst(5).trimmingCharacters(in: .whitespaces)
-            guard jsonStr != "[DONE]",
-                  let jData = jsonStr.data(using: .utf8),
-                  let obj   = try? JSONSerialization.jsonObject(with: jData) as? [String:Any]
-            else { return }
-            process(obj)
+        let rawString = String(data: data, encoding: .utf8)
+        var processedString: String = ""
+        
+
+        if rawString!.components(separatedBy: "\n").count != 1 && rawString!.contains("""
+"status":"
+""")  && rawString!.contains("""
+response.
+"""){
+            for str in rawString!.components(separatedBy: "\n") {
+                var added: Bool = false
+                if str.hasPrefix("data: {") {
+                    processedString = str.components(separatedBy: "data: ")[1]
+                    var dict = try? JSONSerialization.jsonObject(with: processedString.data(using: .utf8)!, options: []) as? [String: Any]
+                    if added == false {
+                        process(dict ?? [:])
+                        added = true
+                    }
+                }
+            }
+        } else {
+            processedString = String(rawString!.dropFirst(5))
+            if processedString.hasPrefix("data: ") {
+                if processedString.components(separatedBy: "data: ").count > 1 {
+                    processedString = processedString.components(separatedBy: "data: ")[1]
+                }
+            }
+            if processedString.hasPrefix("data: ") {
+                if processedString.components(separatedBy: "data: ").count > 1 {
+                    processedString = processedString.components(separatedBy: "data: ")[1]
+                }
+            }
+            if processedString.hasPrefix("data: ") {
+                if processedString.components(separatedBy: "data: ").count > 1 {
+                    processedString = processedString.components(separatedBy: "data: ")[1]
+                }
+            }
+            var dict = try? JSONSerialization.jsonObject(with: processedString.data(using: .utf8)!, options: []) as? [String: Any]
+            if ((dict?.isEmpty) != nil) {
+                print(rawString)
+            }
+            process(dict ?? [:])
         }
+        
+        
+ 
+        
+
+
     }
     
     func urlSession(_ session: URLSession,
@@ -46,7 +84,8 @@ final class EventStreamingHandler: NSObject, URLSessionDataDelegate {
         switch provider {
         case .gemini:
             if let delta = LLMResponseParser.textDelta(obj, provider: ModelProvider.gemini) {
-                bufferText += delta; onText(bufferText)
+
+                bufferText += delta; onText(delta)
             }
             if let call = LLMResponseParser.toolCall(obj, provider: ModelProvider.gemini) {
                 onFunc(call)
@@ -56,7 +95,7 @@ final class EventStreamingHandler: NSObject, URLSessionDataDelegate {
             
         case .openai:
             if let delta = LLMResponseParser.textDelta(obj, provider: ModelProvider.openai) {
-                bufferText += delta; onText(bufferText)
+                bufferText += delta; onText(delta)
             }
             if let call = LLMResponseParser.toolCall(obj, provider: ModelProvider.openai) {
                 onFunc(call)

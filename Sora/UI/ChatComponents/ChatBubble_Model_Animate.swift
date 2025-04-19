@@ -30,7 +30,7 @@ struct ChatBubble_Model_Animate: View {
                         .multilineTextAlignment(.leading) // 왼쪽 정렬 명시
                         .padding(EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16))
                         // 애니메이션 제거하여 텍스트 렌더링 안정화
-                        .animation(nil, value: fullMessage)
+                        .animation(.smooth(duration: 0.3), value: fullMessage)
                         .animation(nil, value: baseMessage)
                         .animation(.smooth(duration: 0.3), value: updatedChunk)
                         .allowsHitTesting(false) // 터치 이벤트 방지
@@ -65,7 +65,7 @@ struct ChatBubble_Model_Animate: View {
         .frame(maxWidth: UIScreen.main.bounds.width * 0.85, alignment: .leading)
         .onAppear {
             // 애니메이션 즉시 활성화
-            withAnimation(.easeIn(duration: 0.1)) {
+            withAnimation(.easeIn(duration: 0.2)) {
                 isAnimating = true
             }
             

@@ -4,7 +4,7 @@ struct HapticManager {
 
     init() {}
 
-    func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
+    func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .light) {
         let generator = UIImpactFeedbackGenerator(style: style)
         generator.prepare()
         generator.impactOccurred()

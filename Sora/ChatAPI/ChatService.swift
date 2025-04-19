@@ -25,7 +25,7 @@ public final class ChatService: ObservableObject {
     private var modelContext: ModelContext
     private var currentConversation: SoraConversationsDatabase?
     private var conversationId: String = ""
-    private var currentModel: String = "gemini-pro"
+    private var currentModel: String = "gemini-2.0-flash"
     private var currentMessages: [MessageItem] = []
     
     // MARK: - 초기화
@@ -34,22 +34,6 @@ public final class ChatService: ObservableObject {
         log("ChatService initialized with ModelContext.")
     }
     
-    // MARK: - API 초기화
-    public func initialize() {
-        if !apiKey.isEmpty {
-            var gemini = self.geminiAPI
-            gemini.setApiKey(apiKey)
-            self.geminiAPI = gemini
-            
-            var openai = self.openaiAPI
-            openai.setApiKey(apiKey)
-            self.openaiAPI = openai
-            
-            log("API 클라이언트가 초기화되었습니다.")
-        } else {
-            log("API 키가's 비어있어 초기화할 수 없습니다.")
-        }
-    }
     
     // MARK: - 새 대화 설정
     public func setupNewConversation(model: String, conversationId: String) {
@@ -80,8 +64,7 @@ public final class ChatService: ObservableObject {
             return
         }
         
-        // API 초기화 확인
-        initialize()
+
         
         isProcessing = true
         
@@ -104,30 +87,22 @@ public final class ChatService: ObservableObject {
         
         geminiAPI.stream(
             model: currentModel,
+            apiKey: apiKey,
             messageDicts: messages,
             tools: [],
             systemPrompt: "",
-            onText: { chunk in 
-                Task { @MainActor in 
-                    self.lastStreamingText = chunk
-                    
-                    // 마지막 메시지 업데이트
-                    if let lastIndex = self.currentMessages.indices.last {
-                        self.currentMessages[lastIndex] = MessageItem(
-                            role: .model, 
-                            content: chunk, 
-                            imageData: nil, 
-                            timestamp: Date()
-                        )
-                        
-                        // 메시지 업데이트 콜백 호출
-                        self.onMessagesUpdated?(self.currentMessages)
-                    }
+            onText: { chunk in
+                Task { @MainActor in
+                    // 누적 스트리밍 텍스트
+                    self.lastStreamingText += chunk
+                    // 업데이트 콜백에 전체 텍스트 전달
+                    self.onMessagesUpdated?(self.currentMessages)
+                    self.log("🔹 Gemini chunk: \(chunk)")
                 }
             },
-            onFunc: { call in 
-                Task { @MainActor in 
-                    self.log("함수 호출: \(call.name)")
+            onFunc: { call in
+                Task { @MainActor in
+                    self.log("🔧 Gemini func: \(call.name)")
                 }
             },
             onDone: { finishReason, error in
@@ -263,16 +238,30 @@ public final class ChatService: ObservableObject {
         case (.gemini, true):
             geminiAPI.stream(
                 model        : model,
+                apiKey: apiKey,
                 messageDicts : dicts,
                 tools        : tools,
                 systemPrompt : systemPrompt,
-                onText       : { chunk in Task { @MainActor in self.lastStreamingText = chunk; onUpdate(chunk); self.log("🔹 Gemini chunk: \(chunk)") } },
-                onFunc       : { call in Task { @MainActor in self.log("🔧 Gemini func: \(call.name)") } },
-                onDone       : { finish, err in handleResponse(self.lastStreamingText, finish, err) }
+                onText       : { chunk in
+                    Task { @MainActor in
+                        // 누적 스트리밍 텍스트
+                        self.lastStreamingText = chunk
+                        // 업데이트 콜백에 전체 텍스트 전달
+                        onUpdate(self.lastStreamingText)
+                        self.log("🔹 Gemini chunk: \(chunk)")
+                    }
+                },
+                onFunc       : { call in
+                    Task { @MainActor in self.log("🔧 Gemini func: \(call.name)") }
+                },
+                onDone       : { finish, err in
+                    handleResponse(finish, "STOP", err)
+                }
             )
         case (.gemini, false):
             geminiAPI.generate(
                 model         : model,
+                apiKey: apiKey,
                 messages      : dicts,
                 systemPrompt  : systemPrompt,
                 generationCfg : generationConfig
@@ -287,16 +276,18 @@ public final class ChatService: ObservableObject {
         case (.openai, true):
             openaiAPI.stream(
                 model        : model,
+                apiKey: apiKey,
                 input        : dicts,
                 tools        : tools,
                 instructions : instructions,
-                onText       : { chunk in Task { @MainActor in self.lastStreamingText = chunk; onUpdate(chunk); self.log("🔹 OpenAI chunk: \(chunk)") } },
+                onText       : { chunk in Task { @MainActor in onUpdate(chunk); self.log("🔹 OpenAI chunk: \(chunk)") } },
                 onFunc       : { call in Task { @MainActor in self.log("🔧 OpenAI func: \(call.name)") } },
                 onDone       : { finish, err in handleResponse(self.lastStreamingText, finish, err) }
             )
         case (.openai, false):
             openaiAPI.generate(
                 model        : model,
+                apiKey: apiKey,
                 input        : dicts,
                 instructions : instructions
             ) { result in

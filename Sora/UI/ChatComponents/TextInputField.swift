@@ -50,18 +50,20 @@ struct TextInputField: View {
                 
                 // 실제 내용물
                 HStack(alignment: .center) {
-                    // 미디어 추가 버튼 (왼쪽에 배치)
+                    // 미디어 추가 버튼 (왼쪽에 배치) - Menu 뷰로 변경
                     if let onMediaButtonTap = onMediaButtonTap {
-                        Button(action: onMediaButtonTap) {
+                        Menu {
+                            Button("이미지 선택", action: onMediaButtonTap)
+                            // 추가 미디어 옵션이 필요하면 여기에 버튼 추가
+                        } label: {
                             Image(systemName: "plus")
                                 .font(.system(size: 18))
                                 .foregroundColor(colorScheme == .dark ? .white : .black)
-                                .opacity(isStreaming ? 0.5 : 1.0) // 스트리밍 중에는 반투명하게
+                                .opacity(isStreaming ? 0.5 : 1.0)
                                 .frame(width: 28, height: 28)
+                                .padding(.leading, 12)
                         }
-                        .padding(.leading, 12)
-                        .contentShape(Rectangle())
-                        .disabled(isStreaming) // 스트리밍 중에는 비활성화
+                        .disabled(isStreaming)
                     }
                     
                     // 텍스트 에디터 (여러 줄 입력 지원)
@@ -88,7 +90,7 @@ struct TextInputField: View {
                             .disabled(isStreaming) // 스트리밍 중에는 비활성화
                             .onChange(of: text) { oldValue, newValue in
                                 // 텍스트 높이 계산 - 더 부드러운 애니메이션
-                                withAnimation(.easeOut(duration: 0.2)) {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                     textEditorHeight = calculateHeight(for: newValue)
                                     
                                     // 텍스트가 입력되면 확장
@@ -98,7 +100,7 @@ struct TextInputField: View {
                                 }
                             }
                             .onChange(of: isFocused) { oldValue, newValue in
-                                withAnimation(.easeOut(duration: 0.2)) {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                     isExpanded = newValue || !text.isEmpty
                                 }
                             }
@@ -114,7 +116,7 @@ struct TextInputField: View {
                         if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isStreaming {
                             onSend()
                             // 전송 후 텍스트가 비워지면 축소 상태로
-                            withAnimation(.easeOut(duration: 0.2)) {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                 isExpanded = false
                                 // 포커스 해제하여 키보드 숨김
                                 isFocused = false
@@ -132,13 +134,12 @@ struct TextInputField: View {
                             // 전송 버튼 스케일 애니메이션 추가
                             .scaleEffect(isFocused || isExpanded ? 1.0 : 0.9)
                             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isFocused)
-                            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isExpanded)
                     }
                     .padding(.trailing, 12)
                     .padding(.bottom, 4)
                     .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isStreaming)
                 }
-                .animation(.easeOut(duration: 0.2), value: isExpanded)
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isExpanded)
                 .padding(.vertical, 2)
             }
             .background(.clear)
@@ -156,7 +157,7 @@ struct TextInputField: View {
                             .shadow(color: Color.accentColor.opacity(0.25), radius: 4)
                             // 테두리 밝기 애니메이션 효과 추가
                             .opacity(0.8)
-                            .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isFocused)
+                            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isFocused)
                     }
                 }
             )
@@ -167,9 +168,10 @@ struct TextInputField: View {
                 isFocused = true
             }
         }
+        .frame(maxWidth: UIScreen.main.bounds.width - 10)
         .background(.clear)
-        .animation(.easeOut(duration: 0.2), value: isExpanded)
-        .animation(.easeOut(duration: 0.2), value: textEditorHeight)
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isExpanded)
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: textEditorHeight)
         .onAppear {
             // 자동 포커스 설정 - autoFocus가 true일 때만 작동
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

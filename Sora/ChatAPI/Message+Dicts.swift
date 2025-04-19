@@ -9,15 +9,17 @@ extension Message {
             d["content"] = s
         } else {
             d["content"] = parts.map { part -> [String:Any] in
-                switch part {
-                case .text(let s):
-                    return ["type":"text","text": s]
-                case .image(let b, let m):
+                switch (part, role) {
+                case (.text(let s), "user"):
+                    return ["type":"input_text","text": s]
+                case (.text(let s), "assistant"):
+                    return ["type":"output_text","text": s]
+                case (.image(let b, let m), role):
                     return ["type":"input_image","image_url": "data:\(m);base64,\(b)"]
-                case .file(let b, let m, let n):
+                case (.file(let b, let m, let n), role):
                     let urlDict: [String:Any] = ["url": "data:\(m);base64,\(b)", "file_name": n]
                     return ["type":"input_file","file_url": urlDict]
-                case .toolCall(let name, let args, let desc, let id, let cid):
+                case (.toolCall(let name, let args, let desc, let id, let cid), role):
                     let callDict: [String:Any] = [
                         "name": name,
                         "arguments": args,
@@ -26,8 +28,10 @@ extension Message {
                         "call_id": cid
                     ]
                     return ["type":"tool","tool_call": callDict]
+                default:
+                    return [:]
                 }
-            }
+                }
         }
         return d
     }

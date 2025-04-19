@@ -79,13 +79,22 @@ struct ChatView: View {
     @StateObject private var chatService = ChatService.createTemp()
     
     // MARK: - 대화 관련
-    let model: String
+    @State private var model: String
     var conversationId: UUID
     @State private var conversation: SoraConversationsDatabase?
+    private var hapticEngine = try? CHHapticEngine()
+    private let StreamingHapticPath = Bundle.main.path(forResource: "StreamingHaptic", ofType: "ahap")
     
     // 대화 관련 상태
     @State private var isStreaming: Bool = false
     @State private var currentStreamingMessage: String = ""
+    @State private var modelProvider: EventStreamingHandler.Provider?
+    
+    // MARK: - 이미지 선택 관련 상태
+    @State private var showImagePicker = false
+    @State private var selectedPhotoItem: UIImage?
+    @State private var selectedImageData: Data? = nil
+    @State private var fullMessage: String = ""
     
     // MARK: - 초기화
     init(model: String, conversationId: UUID) {
@@ -103,6 +112,7 @@ struct ChatView: View {
             // 배경색
             Color("BackgroundColor")
                 .ignoresSafeArea()
+                .ignoresSafeArea(.keyboard)
             
             // 메인 콘텐츠
             ZStack(alignment: .bottom) {
@@ -119,26 +129,21 @@ struct ChatView: View {
                                     
                                     // 메시지 목록
                                     ForEach(messages) { message in
-                                        Group {
-                                            if message.role == .user {
-                                                ChatBubble_User(message: message.content)
-                                                    .id(message.id)
-                                                    .transition(.asymmetric(
-                                                        insertion: .opacity.combined(with: .scale(scale: 0.95).combined(with: .move(edge: .bottom))).animation(.spring(response: 0.4, dampingFraction: 0.7)),
-                                                        removal: .opacity.animation(.easeOut(duration: 0.2))
-                                                    ))
-                                            } else {
-                                                ChatBubble_Model(message: message.content)
-                                                    .id(message.id)
-                                            }
+                                        if message.role == .user {
+                                            ChatBubble_User(messageItem: message)
+                                                .id(message.id)
+                                        } else {
+                                            ChatBubble_Model(message: message.content)
+                                                .id(message.id)
                                         }
                                     }
                                     
                                     // 스트리밍 중인 메시지
                                     if isStreaming && !currentStreamingMessage.isEmpty {
+
                                         ChatBubble_Model_Animate(
-                                            baseMessage: "",
-                                            updatedChunk: currentStreamingMessage,
+                                            baseMessage: fullMessage,
+                                            updatedChunk: self.currentStreamingMessage,
                                             animationDuration: 0.3
                                         )
                                         .id("streaming-bubble")
@@ -152,36 +157,53 @@ struct ChatView: View {
                                         .id(bottomID)
                                 }
                                 .padding(.horizontal, 16)
+                                // 메시지 목록 변경 시 애니메이션
+                                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: messages.count)
                             }
                             .contentShape(Rectangle()) // 빈 공간에서도 제스처가 동작하도록 설정
                             .onTapGesture {
                                 // 여백 탭 시 키보드 닫기
                                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             }
-                            .onAppear {
-                                self.scrollViewProxy = scrollView
-                                // 초기 스크롤
-                                scrollToBottom()
-                            }
-                            .onChange(of: messages.count) { 
-                                // 메시지 추가 시 스크롤
-                                scrollToBottom()
-                            }
-                            .onChange(of: currentStreamingMessage) {
-                                // 메시지 업데이트 시 스크롤
-                                scrollToBottom()
-                            }
+ 
                         }
                     }
                 }
                 
                 // 입력 필드 - 하단에 고정
                 VStack(spacing: 0) {
-                    Spacer()
+                    // 선택된 이미지 미리보기
+                    if let imageData = selectedImageData, let uiImage = UIImage(data: imageData) {
+                        HStack {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 80)
+                                .cornerRadius(8)
+                                .padding(.leading, 8)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                selectedImageData = nil
+                                selectedPhotoItem = nil
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.gray)
+                                    .background(Circle().fill(Color(UIColor.systemBackground)))
+                            }
+                        }
+                        .frame(maxWidth: UIScreen.main.bounds.width - 10)
+                        .padding(.horizontal, 8)
+                        .padding(.bottom, 5)
+                    }
+                    
                     TextInputField(
                         text: $inputText,
                         onSend: sendMessage,
-                        onMediaButtonTap: nil, // 사진 업로드 기능 비활성화
+                        onMediaButtonTap: {
+                            showImagePicker = true
+                        },
                         isStreaming: isStreaming,
                         autoFocus: false // 자동 포커스 비활성화
                     )
@@ -189,53 +211,63 @@ struct ChatView: View {
                     .padding(.bottom, 8)
                 }
             }
-            
-            ZStack {
-                GlassRectangle(gyro: gyro, cornerRadius: 29, width: UIScreen.main.bounds.width * 0.9, height: 60)
-                // 상단 헤더 (항상 위에 표시)
-                HStack {
-                    // 뒤로가기 버튼
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title3)
-                            .padding(8)
-                            .background(Circle().fill(Color("ChatBubbleBackgroundColor_User")))
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.leading, 15)
-                    
-                    Spacer()
-                    
-                    // 제목
-                    Text(conversation?.title ?? "새로운 대화")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                    
-                    Spacer()
-                    
-                    // 메뉴 버튼
-                    Button {
-                        withAnimation(.smooth) {
-                            showSideMenu = true
-                        }
-                    } label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.title3)
-                            .padding(8)
-                            .background(Circle().fill(Color("ChatBubbleBackgroundColor_User")))
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.trailing, 15)
-                }
-                .frame(alignment: .top)
-                .ignoresSafeArea()
-                .padding(.horizontal)
-                .padding(.top)
-                .padding(.bottom, 15)
+            .onChange(of: currentStreamingMessage) {
+                HapticManager().impact(.light)
             }
+            
+            ZStack(alignment: .bottom) {
+                GlassRectangle(gyro: gyro, cornerRadius: 0, width: UIScreen.main.bounds.width, height: 100)
+                    
+                // 상단 헤더 (항상 위에 표시)
+                VStack {
+                    HStack {
+                        // 뒤로가기 버튼
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.title3)
+                                .padding(8)
+                                .foregroundColor(.primary)
+                        }
+                        .padding(.leading, 25)
+
+                        Spacer()
+                        
+                        // 메뉴 버튼
+                        Button {
+                            withAnimation(.smooth) {
+                                showSideMenu = true
+                            }
+                        } label: {
+                            Image(systemName: "line.3.horizontal")
+                                .resizable(resizingMode: .stretch)
+                                .font(.title3)
+                                .padding(8)
+                                .foregroundColor(.primary)
+                                .scaledToFit()
+                        }
+                        .frame(height: 30)
+                        .padding(.trailing, 20)
+
+                    }
+                    .frame(alignment: .bottom)
+                    .padding(.top, 70)
+                    .padding(.bottom, 20)
+                    .frame(maxHeight: 60)
+                    HStack {
+                        Text(conversation?.title ?? "새로운 대화")
+                            .fontWeight(.medium)
+                            .font(.title2)
+                            .lineLimit(1)
+                    }
+                    .padding(.bottom, 3)
+                }
+                .frame(maxHeight: 100, alignment: .top)
+                .padding(.bottom, 0)
+
+            }
+            .ignoresSafeArea()
             
             // 우측 메뉴 오버레이
             if showSideMenu {
@@ -254,7 +286,7 @@ struct ChatView: View {
                     
                     ChatSideMenuView(
                         conversation: sideMenuConversation,
-                        apiKey: SoraAPIKeys.shared.load(api: model.contains("gpt") ? .openai : .gemini) ?? "",
+                        apiKey: SoraAPIKeys.shared.load(api: modelProvider == .openai ? .openai : .gemini) ?? "",
                         onClose: {
                             withAnimation(.smooth) {
                                 showSideMenu = false
@@ -265,8 +297,14 @@ struct ChatView: View {
                             }
                         }
                     )
-                    .padding(.trailing, 20)
                     .transition(.move(edge: .trailing))
+                }
+                .onChange(of: conversation?.model) {
+                    model = conversation?.model ?? "gpt-4.1-mini"
+                    print(model)
+                    modelProvider = ((conversation?.model.contains("gpt")) != nil) ? .openai : .gemini
+                    chatService.apiKey = SoraAPIKeys.shared.load(api: modelProvider == .openai ? .openai : .gemini) ?? ""
+                    chatService.updateModelContext(modelContext)
                 }
                 .zIndex(2)
             }
@@ -274,18 +312,34 @@ struct ChatView: View {
         .navigationBarHidden(true)
         .onAppear {
             // ChatService 초기화
+            model = conversation?.model ?? "gpt-4.1-mini"
+            print(model)
+            modelProvider = ((conversation?.model.contains("gpt")) != nil) ? .openai : .gemini
+            chatService.apiKey = SoraAPIKeys.shared.load(api: modelProvider == .openai ? .openai : .gemini) ?? ""
+            chatService.updateModelContext(modelContext)
             setupChat()
+        }
+        // 이미지 선택 시트 추가
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $selectedPhotoItem)
+        }
+        // 선택된 사진 아이템 변경 감지
+        .onChange(of: selectedPhotoItem) { newItem in
+            Task {
+                // PhotosPickerItem에서 Data 로드
+                if let data = try? await newItem?.pngData() {
+                    selectedImageData = data
+                }
+            }
         }
     }
     
     // MARK: - 채팅 설정
     private func setupChat() {
-        let modelType: DataAPIType = model.contains("gpt") ? .openai : .gemini
+        let modelType: DataAPIType = modelProvider == .openai ? .openai : .gemini
         // ChatService 설정
-        chatService.apiKey = SoraAPIKeys.shared.load(api: modelType) ?? ""
-        chatService.initialize()
+        chatService.apiKey = SoraAPIKeys.shared.load(api: modelProvider == .openai ? .openai : .gemini) ?? ""
         chatService.updateModelContext(modelContext)
-        
         // 키보드 감지 설정
         setupKeyboardObservers()
         
@@ -352,32 +406,34 @@ struct ChatView: View {
     
     // MARK: - 새 대화 생성
     private func createNewConversation() {
-        print("새 대화를 생성합니다: ID=\(conversationId), Model=\(model)")
+        print("새 대화를 생성합니다: ID=\(conversationId), Model=\(conversation?.model ?? "gpt-4.1-mini")")
         let newConversation = SoraConversationsDatabase(
             id: conversationId,
             title: "새 대화",
             isPinned: false,
             messages: [],
             chatType: "assistant",
-            model: model,
+            model: "gpt-4.1-mini",
             createdAt: Date()
         )
-        
         conversation = newConversation
+        model = conversation?.model ?? "gpt-4.1-mini"
         modelContext.insert(newConversation)
         chatService.setConversation(newConversation)
     }
     
     // MARK: - 메시지 전송
     private func sendMessage() {
+        model =  conversation?.model ?? "gpt-4.1-mini"
         let trimmedText = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedText.isEmpty && !isStreaming else { return }
+        // 텍스트가 비어 있고 이미지도 없는 경우 전송하지 않음
+        guard (!trimmedText.isEmpty || selectedImageData != nil) && !isStreaming else { return }
         
-        // 사용자 메시지 추가
+        // 사용자 메시지 아이템 생성 (이미지 데이터 포함)
         let userMessageItem = MessageItem(
             role: .user,
             content: trimmedText,
-            imageData: nil,
+            imageData: selectedImageData,
             timestamp: Date()
         )
         
@@ -386,16 +442,17 @@ struct ChatView: View {
             messages.append(userMessageItem)
         }
         
-        // 입력 필드 초기화
+        // 입력 필드 및 이미지 선택 초기화
         inputText = ""
+        let imageDataToSend = selectedImageData // API 호출 전에 이미지 데이터 저장
+        selectedImageData = nil
+        selectedPhotoItem = nil
         
-        // 저장 로직 - 실제 Message 객체 생성 및 데이터베이스에 저장
-        let msg = Message(role: "user", text: trimmedText, conversation: conversation)
-        modelContext.insert(msg)
-        conversation?.messages.append(msg)
-        try? modelContext.save()
+        // 실제 Message 객체 생성 및 데이터베이스 저장
+        let imageToSendUIImage = imageDataToSend != nil ? UIImage(data: imageDataToSend!) : nil
+        chatService.addUser(text: trimmedText, image: imageToSendUIImage)
         
-        // 응답 시뮬레이션
+        // 응답 생성
         simulateResponse(to: trimmedText)
     }
     
@@ -404,9 +461,8 @@ struct ChatView: View {
         // 응답 처리 시작
         isStreaming = true
         currentStreamingMessage = ""
-        
         // ChatService가 설정되었는지 확인
-        guard let conversation = conversation else {
+        guard conversation != nil else {
             print("대화가 설정되지 않았습니다.")
             isStreaming = false
             return
@@ -414,11 +470,12 @@ struct ChatView: View {
         
         // ChatService로 API 호출
         chatService.run(
-            model: self.model,
+            model: conversation?.model ?? "gpt-4.1-mini",
             streaming: true,
             onUpdate: { streamedText in
                 DispatchQueue.main.async {
                     self.currentStreamingMessage = streamedText
+                    fullMessage = fullMessage + self.currentStreamingMessage
                 }
             },
             onToolCall: { toolCall in
@@ -431,7 +488,14 @@ struct ChatView: View {
                         self.finishResponse(with: "오류가 발생했습니다: \(error.localizedDescription)")
                     } else {
                         print("API 호출 완료. 사유: \(finishReason ?? "없음")")
-                        self.finishResponse(with: self.currentStreamingMessage)
+                        print(modelProvider)
+                        if modelProvider == .gemini {
+                            self.finishResponse(with: fullMessage)
+                        } else {
+                            print(fullMessage)
+                            self.finishResponse(with: self.currentStreamingMessage)
+                        }
+                        
                     }
                 }
             }
@@ -442,7 +506,7 @@ struct ChatView: View {
     private func finishResponse(with text: String) {
         // 스트리밍 완료
         isStreaming = false
-        
+        print(text)
         // 응답 메시지 추가
         let assistantMessage = MessageItem(
             role: .model,
@@ -463,6 +527,7 @@ struct ChatView: View {
         
         // 현재 메시지 초기화
         currentStreamingMessage = ""
+        fullMessage = ""
         
         // 스크롤 처리
         scrollToBottom()
